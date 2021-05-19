@@ -68,7 +68,7 @@ contract('EthSwap', ([deployer, investor]) => { //callback function
         let result
 
         before(async () => {
-            result = ethSwap.buyTokens({from: investor, value: web3.utils.toWei('1', 'ether')})
+            result = await ethSwap.buyTokens({from: investor, value: web3.utils.toWei('1', 'ether')})
         })
 
         it('Allows user to instantly purchase tokens from EthSwap for a fixed price', async () => {
@@ -84,6 +84,13 @@ contract('EthSwap', ([deployer, investor]) => { //callback function
             // check eth balance of eth increase
             ethSwapBalance = await web3.eth.getBalance(ethSwap.address)
             assert.equal(ethSwapBalance.toString(), web3.utils.toWei('1', 'Ether'))
+
+            // ensures emit is correct
+            const event = result.logs[0].args
+            assert.equal(event.account, investor)
+            assert.equal(event.token, token.address)
+            assert.equal(event.amount.toString(), tokens('100').toString())
+            assert.equal(event.rate.toString(), '100')
         })
     })
 

@@ -12,6 +12,14 @@ contract EthSwap {
     Token public token; // gets just the code
     uint public rate = 100; // pre-determined exchange rate
 
+    // to keep transparency
+    event TokenPurchased(
+        address account,
+        address token,
+        uint amount,
+        uint rate
+    );
+
     constructor(Token _token) public {
         token = _token; // writes to the blockchain, as address gets passed to here
     }
@@ -25,5 +33,8 @@ contract EthSwap {
         uint tokenAmount = msg.value * rate;
         // msg.sender = buyer address
         token.transfer(msg.sender, tokenAmount);
+
+        //emit event
+        emit TokenPurchased(msg.sender, address(token), tokenAmount, rate);
     }
 }
