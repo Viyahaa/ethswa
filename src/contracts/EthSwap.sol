@@ -31,7 +31,12 @@ contract EthSwap {
         // redemption rate = # tokens they receive for 1 ETH
         // amount of ETH * redemption rate
         uint tokenAmount = msg.value * rate;
+
+        // ensure exchange balance is sufficient for the sale
+        require(token.balanceOf(address(this)) >= tokenAmount);
+
         // msg.sender = buyer address
+        // transfer tokens to buyer
         token.transfer(msg.sender, tokenAmount);
 
         //emit event
