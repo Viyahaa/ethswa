@@ -10,6 +10,11 @@ contract Token {
     uint256 public totalSupply = 1000000000000000000000000; // 1 million tokens
     uint8   public decimals = 18;
 
+    // number larger than 1M as includes subdivisions to the 18th decimal place
+    // ... i.e. the same way $1.00 has subdivisions to the second decimal place
+    // ... ETH has up to 18 decimal places after, using integer = larger number
+    // ETH smallest value is Wei, the way a cent is smallest value of USD
+
     event Transfer(
         address indexed _from,
         address indexed _to,
