@@ -24,7 +24,9 @@ function tokens(n) {
     return web3.utils.toWei(n, 'ether');
 }
 
-contract('EthSwap', (accounts) => { //callback function
+// deployer = receiver
+// investor = sender
+contract('EthSwap', ([deployer, investor]) => { //callback function
     //tests inside of here
 
     let token, ethSwap // make these variables public
@@ -36,7 +38,7 @@ contract('EthSwap', (accounts) => { //callback function
 
     before(async () => {
         token = await Token.new()
-        ethSwap = await EthSwap.new()
+        ethSwap = await EthSwap.new(token.address)
         await token.transfer(ethSwap.address, tokens('1000000'))
     })
 
@@ -59,6 +61,29 @@ contract('EthSwap', (accounts) => { //callback function
         it('contract has tokens', async () => {
             let balance = await token.balanceOf(ethSwap.address)
             assert.equal(balance.toString(), tokens('1000000'))
+        })
+    })
+
+    describe('buyTokens()', async () => {
+        let result
+
+        before(async () => {
+            result = ethSwap.buyTokens({from: investor, value: web3.utils.toWei('1', 'ether')})
+        })
+
+        it('Allows user to instantly purchase tokens from EthSwap for a fixed price', async () => {
+            // check investor balance increase
+            let investorBalance = await token.balanceOf(investor)
+            assert.equal(investorBalance.toString(), tokens('100')) // as 100 is redemption rate for 1 ETH
+
+            // check EthSwap balance
+            let ethSwapBalance
+            // check eth balance of tokens decrease
+            ethSwapBalance = await token.balanceOf(ethSwap.address)
+            assert.equal(ethSwapBalance.toString(), tokens('999900'))
+            // check eth balance of eth increase
+            ethSwapBalance = await web3.eth.getBalance(ethSwap.address)
+            assert.equal(ethSwapBalance.toString(), web3.utils.toWei('1', 'Ether'))
         })
     })
 
