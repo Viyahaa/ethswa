@@ -13,7 +13,15 @@ contract EthSwap {
     uint public rate = 100; // pre-determined exchange rate
 
     // to keep transparency
-    event TokenPurchased(
+    event TokensPurchased(
+        address account,
+        address token,
+        uint amount,
+        uint rate
+    );
+
+    // to keep transparency
+    event TokensSold(
         address account,
         address token,
         uint amount,
@@ -40,6 +48,27 @@ contract EthSwap {
         token.transfer(msg.sender, tokenAmount);
 
         //emit event
-        emit TokenPurchased(msg.sender, address(token), tokenAmount, rate);
+        emit TokensPurchased(msg.sender, address(token), tokenAmount, rate);
+    }
+
+    // reverse of buying
+    function sellTokens(uint _amount) public {
+        // user can't sell more tokens than have: ERC-20 handles this as standard
+        // only for tutorial purposes
+        require(token.balanceOf(msg.sender) >= _amount);
+
+        // Calculate amount of ETH to redeem
+        uint etherAmount = _amount / rate;
+
+        // require sufficient ETH at Exchange
+        require(address(this).balance >= etherAmount);
+
+        // Perform sale
+        // transfer function native to ETH
+        // can't call (transfer() on ERC-20 token on behalf of investor)
+        token.transferFrom(msg.sender, address(this), _amount); // trasnfer
+        msg.sender.transfer(etherAmount);
+
+        emit TokensSold(msg.sender, address(token), _amount, rate);
     }
 }
