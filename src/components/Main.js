@@ -4,12 +4,10 @@ import './App.css';
 
 class Main extends Component {
 
-    <h1>Hello World</h1>
-
   render() { // inside curly braces is JS
     return (
       <div id="content">
-        <h1></h1>
+        <h1>Hello World</h1>
       </div>
     );
   }
