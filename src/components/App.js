@@ -3,6 +3,7 @@ import Web3 from 'web3'
 import Token from '../abis/Token.json'
 import EthSwap from '../abis/EthSwap.json'
 import NavBar from './NavBar'
+import Main from './Main'
 
 import './App.css';
 
@@ -45,6 +46,7 @@ class App extends Component {
             window.alert('EthSwap contract not deployed to detected networks')
         }
 
+        this.setState({ loading: false })
 
     }
 
@@ -68,11 +70,18 @@ class App extends Component {
         token: {},
         ethSwap: {},
         ethBalance: '0',
-        tokenBalance: '0'
+        tokenBalance: '0',
+        loading: true
     }
   }
 
   render() { // inside curly braces is JS
+      let content
+      if(this.state.loading) {
+          content = <p id="loader" className="text-center">Loading...</p>
+      } else {
+          content = <Main />
+      }
     return (
       <div>
         <NavBar account={this.state.account}/> // Puts NavBar in its own component & sends state to access balance
@@ -86,7 +95,7 @@ class App extends Component {
                   rel="noopener noreferrer"
                 >
                 </a>
-                <h1>Hello World</h1>
+                <Main />
               </div>
             </main>
           </div>
