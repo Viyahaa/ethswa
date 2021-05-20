@@ -95,7 +95,7 @@ class App extends Component {
                   rel="noopener noreferrer"
                 >
                 </a>
-                <Main />
+                { content }
               </div>
             </main>
           </div>
