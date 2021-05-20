@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import Web3 from 'web3'
+import Token from '../abis/Token.json'
+import EthSwap from '../abis/EthSwap.json'
 import NavBar from './NavBar'
+
 import './App.css';
 
 class App extends Component {
@@ -15,12 +18,25 @@ class App extends Component {
 
         // get accounts to display balance (e.g. max to buy)
         const accounts = await web3.eth.getAccounts()
-
         // set state to access the data in other places in the application
         this.setState({ account: accounts[0]})
 
         const ethBalance = await web3.eth.getBalance(this.state.account)
         this.setState({ ethBalance }) // same as ethBalance: ethBalance
+
+        // load token
+        const networkId = await web3.eth.net.getId() // get id of network connected via metamask
+        const tokenData = Token.networks[networkId]
+        if(tokenData) {
+            const token = new web3.eth.Contract(Token.abi, tokenData.address)
+            this.setState({ token })
+            let tokenBalance = await token.methods.balanceOf(this.state.account).call() // call to fetch info from blockchain
+            this.setState({ tokenBalance: tokenBalance.toString()})
+        } else {
+            window.alert('Token contract not deployed to detected networks')
+        }
+
+
     }
 
     async loadWeb3() {
@@ -39,7 +55,10 @@ class App extends Component {
     constructor(props) {
     super(props) // calls constructor on class we are extending
     this.state = {
-        account: ''
+        account: '',
+        token: {},
+        ethBalance: '0',
+        tokenBalance: '0'
     }
   }
 
